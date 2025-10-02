@@ -1,1 +1,1 @@
-repositório das avaliações e exercicios
+Repositório das avaliações e exercicios.
