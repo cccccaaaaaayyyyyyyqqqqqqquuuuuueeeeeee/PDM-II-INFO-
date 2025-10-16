@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'dart:convert';
 
 Future<void> main() async{
   final ip = InternetAddress.anyIPv4; //loopbackIpv4 ->Aparentemente pega o ip do localhost, entretanto não permite contato externo na rede. AnyIPv4 -> Permite contato externo na rede??
@@ -15,24 +15,20 @@ Future<void> main() async{
   }); // server vai esperar por conexões, quando uma acontecer, ele vai executar esse código.
 }
 
-List<Socket> clients = [];
 
 void handleConnection(Socket client){
   print("Server: Conexão do ${client.remoteAddress.address}:${client.remotePort}");
 
   client.listen(
-    (Uint8List data) async {
+    (List<int> data) async {
   
-      final message = String.fromCharCodes(data);
+      final message = utf8.decode(data).trim();
+      print("Server: Temperatura recebida do client: $message");
 
-
-
-      for (final c in clients) {
-        c.write("Server: O usuário ${message} se conectou"); //listener do client
-      }
-
-      clients.add(client);
-      client.write("Server: Você está conectado como ${message}"); //manda pro listener do client.
+      client.write("Server: Temperatura chegou com sucesso."); //manda pro listener do client.
     },
+    onDone: () {
+      print("Server: Client Desconectado");
+    }
   );
 }
